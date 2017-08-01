@@ -99,7 +99,7 @@ $(document).ready(function () {
   function nextVideo() {
     no += 1;
     if (no >= 5) {
-      cnt += 1;
+      cnt += 2;
       no = 1;
     }
     if (cnt >= 40) {
