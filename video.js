@@ -1,9 +1,13 @@
 var detector = null;
 var db = openDatabase('myDB', '1.0', 'xx', 100 * 1024 * 1024);
 
-//var folder = [912, 1172, 1432, 1562, 1692, 1952, 2082, 2212, 2342, 2472, 2602, 2862, 2992, 3382, 3512, 3642, 3772];
-//7,6, 5
-var folder = [2744]//664 670 688 1312 1314 1318
+var avi_fol = [2, 132, 392, 522, 782, 912, 1042, 1172];//8
+var mp4_fol = [262, 652, 1302, 1432, 1562,
+ 1692, 1822, 1952, 2082, 2212,
+ 2342, 2472, 2602, 2732, 2862,
+ 2992, 3122, 3382, 3512, 3642,
+  3772]; //21
+var folder = avi_fol;
 var no = 1;
 var cnt = 0;
 var fcnt = 0;
@@ -36,9 +40,7 @@ $(document).ready(function(){
   v = document.getElementById("video1");    
   //Enable detection of all Expressions, Emotions and Emojis classifiers.
   detector.detectAllEmotions();
-  //detector.detectAllExpressions();
-  //detector.detectAllEmojis();
-  //detector.detectAllAppearance();
+
 
   log("#logs","starting now...");
   detector.start();
@@ -56,22 +58,21 @@ $(document).ready(function(){
       if (detector && detector.isRunning) {
         detector.process(imageData, deltaTime);
       }
-	  
-
-
+      if (v.currentTime > 15) {
+        window.clearInterval(itv)
+        nextVideo();
+        v.play();
+      }
 	  
     }, 250);
     
   }, false);
   
-  v.addEventListener('ended', function () {
-    window.clearInterval(itv);
-    //console.log("clearITV");
-    nextVideo();
-	
-	v.play();
-
-
+  // v.addEventListener('ended', function () {
+  //   window.clearInterval(itv);
+  //   //console.log("clearITV");
+  //   nextVideo();
+	// v.play();
 
   })
 
@@ -127,35 +128,7 @@ $(document).ready(function(){
           faces[0].emotions["surprise"].toFixed(0),
           faces[0].emotions["valence"].toFixed(0),
           faces[0].emotions["engagement"].toFixed(0), //9
-		  //	+ "smile, innerBrowRaise, browRaise, browFurrow, noseWrinkle, 
-		  //upperLipRaise, lipCornerDepressor, chinRaise, lipPucker, lipPress" //10
-		  //    + "lipSuck, mouthOpen,smirk, eyeClosure, attention, 
-		  //eyeWiden, cheekRaise, lidTighten, dimpler, lipStretch, jawDrop)"); //11
-		  //
-		  
-		  /*
-		  faces[0].expressions["smile"],
-		  faces[0].expressions["innerBrowRaise"],
-		  faces[0].expressions["browRaise"],
-		  faces[0].expressions["browFurrow"],
-		  faces[0].expressions["noseWrinkle"],
-		  faces[0].expressions["upperLipRaise"],
-		  faces[0].expressions["lipCornerDepressor"],
-		  faces[0].expressions["chinRaise"],
-		  faces[0].expressions["lipPucker"],
-		  faces[0].expressions["lipPress"],
-		  faces[0].expressions["lipSuck"],
-		  faces[0].expressions["mouthOpen"],
-		  faces[0].expressions["smirk"],
-		  faces[0].expressions["eyeClosure"],
-		  faces[0].expressions["attention"],
-		  faces[0].expressions["eyeWiden"],
-		  faces[0].expressions["cheekRaise"],
-		  faces[0].expressions["lidTighten"],
-		  faces[0].expressions["dimpler"],
-		  faces[0].expressions["lipStretch"],
-		  faces[0].expressions["jawDrop"]//21
-		  */
+
 		  
         ]
         )
@@ -187,37 +160,30 @@ $(document).ready(function(){
     }
   }
 
-  function nextVideo() {
-
-	
-	no += 1;
-	if(no >= 5){
-		fcnt += 1;
-		no = 1;
-	}
-//	if( cnt >= 40){
-//		fcnt += 1;
-//		cnt = 0;
-//	}
-	
-
-	
-	sql = "create table if not exists emotions" + (folder[fcnt]+cnt).toString() + '_' + no.toString()  
-	+ "(time unique, nums, joy, sadness, disgust, contempt, anger, fear, surprise, valence, engagement)"
-	
-	db.transaction(function (tx) {
+function nextVideo() {	
+  no += 1;
+  if(no >= 5){
+    cnt += 1;
+    no = 1;
+  }
+  if( cnt >= 40){
+    fcnt += 1;
+    cnt = 0;
+  }
+  
+  sql = "create table if not exists emotions" + (folder[fcnt]+cnt).toString() + '_' + no.toString()  
+  + "(time unique, nums, joy, sadness, disgust, contempt, anger, fear, surprise, valence, engagement)"
+  
+  db.transaction(function (tx) {
       tx.executeSql(sql); 
     });
 
-    $("#video1").attr("src", "./hci-mp4/"+(folder[fcnt]+ cnt).toString()+"/BW"+no.toString()+".avi.mp4");
-	v.playbackRate = 2;
-    $('#logs').html("");
-    $("#logs").append("<span>" + v.src +"</span><br />");
-    
-	
-
-  }
-});
+  $("#video1").attr("src", "./hci-avi/"+(folder[fcnt]+ cnt).toString()+"/BW"+no.toString()+".avi");
+  v.playbackRate = 2;
+  $('#logs').html("");
+  $("#logs").append("<span>" + v.src +"</span><br />");
+  
+};
 
 function log(node_name, msg) {
    $(node_name).append("<span>" + msg + "</span><br />") 
