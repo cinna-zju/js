@@ -6,37 +6,28 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
     <!--<script src = "https://download.affectiva.com/js/3.2/affdex.js"></script> -->
     <script src = "js-sdk/affdex.js"></script>
     <script src = "video.js"> </script>
 	
-
 </head>
 <body>
 
     
-  
+    <!-- assign the location of first video to start -->
     <video id="video1" controls  width="480" src=./hci-avi/2/BW1.avi></video> 
     <canvas id="canvas1" width="480" height="320"></canvas>
     <script>
 
         var v = document.getElementById("video1");
-
         var c = document.getElementById("canvas1");
         ctx = c.getContext('2d');
-
-		v.playbackRate = 2;
-
+		v.playbackRate = 5; // 5x faster 
         v.addEventListener('play', function() {
             var i = window.setInterval(function() {
                 ctx.drawImage(v, 0, 0, 480, 320);
-				
-            }, 250);
+            }, 100); // capture every 100ms
        }, false);
-
-
-
 
     </script> 
     <button id="stop" onclick="stopnow()">stop</button>
@@ -45,9 +36,5 @@
         <div id="results" style="word-wrap:break-word;"></div>
     </div>
     <div id="logs">LOGS:</div>
-    
-
-    
-
 </body>
 </html>

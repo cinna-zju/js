@@ -1,12 +1,17 @@
 var detector = null;
 var db = openDatabase('myDB', '1.0', 'xx', 100 * 1024 * 1024);
-
-var avi_fol = [1172];//8
-var mp4_fol = [2082, 2212,
+// some videos are in avi format and some are in mp4
+// they are in different folder in AROSTITAN
+// add the first session ID of each subject 
+var avi_fol = [2, 132, 392, 522, 782, 912, 1042, 1172];//8
+var mp4_fol = [262, 652, 1302, 1432, 1562,
+ 1692, 1822, 1952, 2082, 2212,
  2342, 2472, 2602, 2732, 2862,
  2992, 3122, 3382, 3512, 3642,
-  3772]; //21
+  3772]; //21  
+// modify to choose which video to use
 var folder = mp4_fol;
+// some count parameters used in loop
 var no = 1;
 var cnt = 0;
 var fcnt = 0;
@@ -14,6 +19,7 @@ var tcnt = 0;
 var itv;
 var startTimestamp;
 
+// create database
 db.transaction(function (tx) {
 	sql = "create table if not exists emotions" + (folder[fcnt]+cnt).toString() + '_' + no.toString()  
 	+ "(time unique, nums, joy, sadness, disgust, contempt, anger, fear, surprise, valence, engagement)"
@@ -46,15 +52,25 @@ $(document).ready(function () {
       if (detector && detector.isRunning) {
         detector.process(imageData, deltaTime);
       }
-      if (v.currentTime > 11) {
-        window.clearInterval(itv)
-        nextVideo();
-        v.play();
-      }
+      // uncomment if only process the first 11s of each video
+      // block 1
+
+      // if (v.currentTime > 11) {
+      //   window.clearInterval(itv)
+      //   nextVideo();
+      //   v.play();
+      // }
 	  
-    }, 100);
+    }, 100);// set caputre interval = 100 ms
     
   }, false);
+  // if uncomment block 1
+  // comment this
+  v.addEventListener('ended', function () {
+    window.clearInterval(itv);
+    nextVideo();
+    v.play();
+  })
   
   detector.addEventListener("onInitializeSuccess", function () {
     log("#logs", "started");
@@ -114,7 +130,7 @@ $(document).ready(function () {
     });
 
     $("#video1").attr("src", "./hci-mp4/" + (folder[fcnt] + cnt).toString() + "/BW" + no.toString() + ".avi.mp4");
-    v.playbackRate = 5;
+    v.playbackRate = 5; // 5x faster
     $('#logs').html("");
     $("#logs").append("<span>" + v.src + "</span><br />");
 
